@@ -4,25 +4,25 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>git提示：err:src refspec master does not match any的解决办法 | 行走在前端路上的Gavin</title>
+    <title>业务中遇到的数组去重 | 行走在前端路上的Gavin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Zicheng Guo">
     
 
     
-    <meta name="description" content="在经历一系列惨烈的过程后终于装上了win10系统，然而很快我就发现我的个人博客怎么没法用了(╯‵□′)╯︵┻━┻好容易重新搭好部署好hexo环境重新同步好博客以后觉得应该把博客程序本身也放到github上托管一下比较好(:зゝ∠) 然后！ 建好仓库提交的时候！ 发现报错了！1err: src refspec master does not match any. 折腾半天以后发现原来是太久没玩git">
-<meta name="keywords" content="git">
+    <meta name="description" content="好久没写博客了感觉这里的草都要长成森林了。。。最近开发中遇到一个问题，现记录解决方案以备后续查阅。 一、业务场景小程序开发，需要扫码并获取二维码中携带的产品代码（盒/箱）并倒序展示。当扫到已成功扫描的二维码时应提示并不再添加至列表。 二、实现1、构造二维码序列因为扫描二维码后续需要三个动作，一是倒序展示二维码类型（箱/盒）、完整编码以及删除按钮，二是需要构造一个已扫描二维码序列用于后续上传，三是需">
+<meta name="keywords" content="JavaScript,微信小程序">
 <meta property="og:type" content="article">
-<meta property="og:title" content="git提示：err:src refspec master does not match any的解决办法">
-<meta property="og:url" content="https://flyfreely2014.github.io/2015/09/24/git提示：err-src-refspec-master-does-not-match-any的解决办法/index.html">
+<meta property="og:title" content="业务中遇到的数组去重">
+<meta property="og:url" content="https://flyfreely2014.github.io/2019/12/13/业务中遇到的数组去重/index.html">
 <meta property="og:site_name" content="行走在前端路上的Gavin">
-<meta property="og:description" content="在经历一系列惨烈的过程后终于装上了win10系统，然而很快我就发现我的个人博客怎么没法用了(╯‵□′)╯︵┻━┻好容易重新搭好部署好hexo环境重新同步好博客以后觉得应该把博客程序本身也放到github上托管一下比较好(:зゝ∠) 然后！ 建好仓库提交的时候！ 发现报错了！1err: src refspec master does not match any. 折腾半天以后发现原来是太久没玩git">
+<meta property="og:description" content="好久没写博客了感觉这里的草都要长成森林了。。。最近开发中遇到一个问题，现记录解决方案以备后续查阅。 一、业务场景小程序开发，需要扫码并获取二维码中携带的产品代码（盒/箱）并倒序展示。当扫到已成功扫描的二维码时应提示并不再添加至列表。 二、实现1、构造二维码序列因为扫描二维码后续需要三个动作，一是倒序展示二维码类型（箱/盒）、完整编码以及删除按钮，二是需要构造一个已扫描二维码序列用于后续上传，三是需">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-03T01:29:07.762Z">
+<meta property="og:updated_time" content="2019-12-13T07:36:38.318Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="git提示：err:src refspec master does not match any的解决办法">
-<meta name="twitter:description" content="在经历一系列惨烈的过程后终于装上了win10系统，然而很快我就发现我的个人博客怎么没法用了(╯‵□′)╯︵┻━┻好容易重新搭好部署好hexo环境重新同步好博客以后觉得应该把博客程序本身也放到github上托管一下比较好(:зゝ∠) 然后！ 建好仓库提交的时候！ 发现报错了！1err: src refspec master does not match any. 折腾半天以后发现原来是太久没玩git">
+<meta name="twitter:title" content="业务中遇到的数组去重">
+<meta name="twitter:description" content="好久没写博客了感觉这里的草都要长成森林了。。。最近开发中遇到一个问题，现记录解决方案以备后续查阅。 一、业务场景小程序开发，需要扫码并获取二维码中携带的产品代码（盒/箱）并倒序展示。当扫到已成功扫描的二维码时应提示并不再添加至列表。 二、实现1、构造二维码序列因为扫描二维码后续需要三个动作，一是倒序展示二维码类型（箱/盒）、完整编码以及删除按钮，二是需要构造一个已扫描二维码序列用于后续上传，三是需">
 
     
     <link rel="alternative" href="/atom.xml" title="行走在前端路上的Gavin" type="application/atom+xml">
@@ -82,24 +82,30 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/09/24/git提示：err-src-refspec-master-does-not-match-any的解决办法/" title="git提示：err:src refspec master does not match any的解决办法" itemprop="url">git提示：err:src refspec master does not match any的解决办法</a>
+      <a href="/2019/12/13/业务中遇到的数组去重/" title="业务中遇到的数组去重" itemprop="url">业务中遇到的数组去重</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="Zicheng Guo" target="_blank" itemprop="author">Zicheng Guo</a>
 		
   <p class="article-time">
-    <time datetime="2015-09-24T09:25:41.000Z" itemprop="datePublished"> 发表于 2015-09-24</time>
+    <time datetime="2019-12-13T06:38:05.000Z" itemprop="datePublished"> 发表于 2019-12-13</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
-		<p>在经历一系列惨烈的过程后终于装上了win10系统，然而很快我就发现我的个人博客怎么没法用了(╯‵□′)╯︵┻━┻好容易重新搭好部署好hexo环境重新同步好博客以后觉得应该把博客程序本身也放到github上托管一下比较好<em>(:зゝ∠)</em></p>
-<p>然后！</p>
-<p>建好仓库提交的时候！</p>
-<p>发现报错了！<br><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">err: src refspec <span class="keyword">master</span> <span class="title">does</span> not match any.</div></pre></td></tr></table></figure></p>
-<p>折腾半天以后发现原来是太久没玩git。。。只是初始化了一下本地仓库但是还没添加修改和提交修改到本地。。。远端不允许空提交。。。</p>
+		<p>好久没写博客了感觉这里的草都要长成森林了。。。最近开发中遇到一个问题，现记录解决方案以备后续查阅。</p>
+<h3 id="一、业务场景"><a href="#一、业务场景" class="headerlink" title="一、业务场景"></a>一、业务场景</h3><p>小程序开发，需要扫码并获取二维码中携带的产品代码（盒/箱）并倒序展示。当扫到已成功扫描的二维码时应提示并不再添加至列表。</p>
+<h3 id="二、实现"><a href="#二、实现" class="headerlink" title="二、实现"></a>二、实现</h3><h4 id="1、构造二维码序列"><a href="#1、构造二维码序列" class="headerlink" title="1、构造二维码序列"></a>1、构造二维码序列</h4><p>因为扫描二维码后续需要三个动作，一是倒序展示二维码类型（箱/盒）、完整编码以及删除按钮，二是需要构造一个已扫描二维码序列用于后续上传，三是需要统计扫码成功的箱&amp;盒数量。因此构造以下数组结构：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> codeList = [fullCode,...];</div><div class="line"><span class="keyword">let</span> codeItemList = [&#123;</div><div class="line">  typeCode,</div><div class="line">  typeText,</div><div class="line">  fullCode,</div><div class="line">  delType</div><div class="line">&#125;,...];</div></pre></td></tr></table></figure>
+<p>其中 codeList 是已扫描的完整编码序列，codeItemList 用于存储需要展示的二维码序列。</p>
+<p>接下来就是添加二维码逻辑部分,共有两种去重逻辑：</p>
+<p>第一种，使用 filter 方法筛选对象数组中与新增对象的 fullCode 相同的对象，有结果则报错，无结果则添加对象并计数</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">//判断对象数组中与新增对象的fullCode相同的对象数量，为零则表示没有</div><div class="line"><span class="keyword">if</span> (</div><div class="line">  codeItemList.filter(<span class="attr">item</span> =&gt; &#123;</div><div class="line">    return item.<span class="attr">fullCode</span> === codeItem.fullCode;</div><div class="line">  &#125;).<span class="attr">length</span> === <span class="number">0</span></div><div class="line">) &#123;</div><div class="line">  //判断新增判断新增对象的类型，并相应计数</div><div class="line">  <span class="keyword">if</span> (codeItem.<span class="attr">typeCode</span> === <span class="string">"X"</span>) &#123;</div><div class="line">    <span class="attr">caseNum</span> = caseNum + <span class="number">1</span>;</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (</div><div class="line">    codeItem.<span class="attr">typeCode</span> === <span class="string">"H"</span> ||</div><div class="line">    codeItem.<span class="attr">typeCode</span> === <span class="string">"P"</span></div><div class="line">  ) &#123;</div><div class="line">    <span class="attr">boxNum</span> = boxNum + <span class="number">1</span>;</div><div class="line">  &#125;</div><div class="line">  //向字符串数组与对象数组首位添加新对象，以便倒序展示</div><div class="line">  codeItemList.unshift(codeItem);</div><div class="line">  codeList.unshift(fullCode);</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  wx.showToast(&#123;</div><div class="line">    title: <span class="string">"二维码已存在！"</span>,</div><div class="line">    icon: <span class="string">"none"</span>,</div><div class="line">    image: <span class="string">""</span>,</div><div class="line">    duration: <span class="number">1500</span>,</div><div class="line">    mask: <span class="literal">false</span></div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>第二种，直接使用 includes 方法判断字符串数组 codeList 中是否有待添加的 fullCode，有则报错，无则添加并计数：</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">//判断字符串数组中是否包含待增加的fullCode</div><div class="line"><span class="keyword">if</span> (codeList.includes(fullCode)) &#123;</div><div class="line">  wx.showToast(&#123;</div><div class="line">    title: <span class="string">"二维码已存在！"</span>,</div><div class="line">    icon: <span class="string">"none"</span>,</div><div class="line">    image: <span class="string">""</span>,</div><div class="line">    duration: <span class="number">1500</span>,</div><div class="line">    mask: <span class="literal">false</span></div><div class="line">  &#125;);</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  <span class="keyword">if</span> (codeItem.<span class="attr">typeCode</span> === <span class="string">"X"</span>) &#123;</div><div class="line">    <span class="attr">caseNum</span> = caseNum + <span class="number">1</span>;</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (</div><div class="line">    codeItem.<span class="attr">typeCode</span> === <span class="string">"H"</span> ||</div><div class="line">    codeItem.<span class="attr">typeCode</span> === <span class="string">"P"</span></div><div class="line">  ) &#123;</div><div class="line">    <span class="attr">boxNum</span> = boxNum + <span class="number">1</span>;</div><div class="line">  &#125;</div><div class="line">  codeItemList.unshift(codeItem);</div><div class="line">  codeList.unshift(fullCode);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>第一种方法受限于最初的思路，直接筛选整个数组对象，当扫描的二维码非常多时仍然需要遍历整个数组，性能将会受影响（微信小程序的性能……呵呵呵呵）。第二种方法性能更优，但是如果只有对象数组时，需要构造一个新的数组用以存储对象数组中各元素唯一的值。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -108,7 +114,7 @@
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/git/">git</a>
+  <span></span> <a href="/tags/JavaScript/">JavaScript</a><a href="/tags/微信小程序/">微信小程序</a>
   </div>
 
 </div>
@@ -117,7 +123,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://flyfreely2014.github.io/2015/09/24/git提示：err-src-refspec-master-does-not-match-any的解决办法/" data-title="git提示：err:src refspec master does not match any的解决办法 | 行走在前端路上的Gavin" data-tsina="2809156557" class="share clearfix">
+	  <div data-url="https://flyfreely2014.github.io/2019/12/13/业务中遇到的数组去重/" data-title="业务中遇到的数组去重 | 行走在前端路上的Gavin" data-tsina="2809156557" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -130,19 +136,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2015/11/10/关于jQuery-Mobile中data-add-back-btn属性无效的解决方案/" title="关于jQuery Mobile中data-add-back-btn属性无效的解决方案">
-  <strong>上一篇：</strong><br/>
-  <span>
-  关于jQuery Mobile中data-add-back-btn属性无效的解决方案</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2015/09/07/搭建hexo博客过程中遇到的问题及解决方法/"  title="搭建hexo博客过程中遇到的问题及解决方法">
+<a href="/2015/11/19/实战项目总结二：CSS优先级问题以及滚动背景制作/"  title="实战项目总结二：CSS优先级问题，滚动背景问题以及背景切换问题">
  <strong>下一篇：</strong><br/> 
- <span>搭建hexo博客过程中遇到的问题及解决方法
+ <span>实战项目总结二：CSS优先级问题，滚动背景问题以及背景切换问题
 </span>
 </a>
 </div>
@@ -151,7 +149,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2015/09/24/git提示：err-src-refspec-master-does-not-match-any的解决办法/" data-title="git提示：err:src refspec master does not match any的解决办法" data-url="https://flyfreely2014.github.io/2015/09/24/git提示：err-src-refspec-master-does-not-match-any的解决办法/"></div>
+	<div class="ds-thread" data-thread-key="2019/12/13/业务中遇到的数组去重/" data-title="业务中遇到的数组去重" data-url="https://flyfreely2014.github.io/2019/12/13/业务中遇到的数组去重/"></div>
 </section>
 
 
@@ -161,7 +159,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、业务场景"><span class="toc-number">1.</span> <span class="toc-text">一、业务场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、实现"><span class="toc-number">2.</span> <span class="toc-text">二、实现</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1、构造二维码序列"><span class="toc-number">2.1.</span> <span class="toc-text">1、构造二维码序列</span></a></li></ol></li></ol>
  
   </div>
 

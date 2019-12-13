@@ -79,6 +79,74 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/12/13/业务中遇到的数组去重/" title="业务中遇到的数组去重" itemprop="url">业务中遇到的数组去重</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Zicheng Guo" target="_blank" itemprop="author">Zicheng Guo</a>
+		
+  <p class="article-time">
+    <time datetime="2019-12-13T06:38:05.000Z" itemprop="datePublished"> 发表于 2019-12-13</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>好久没写博客了感觉这里的草都要长成森林了。。。最近开发中遇到一个问题，现记录解决方案以备后续查阅。</p>
+<h3 id="一、业务场景"><a href="#一、业务场景" class="headerlink" title="一、业务场景"></a>一、业务场景</h3><p>小程序开发，需要扫码并获取二维码中携带的产品代码（盒/箱）并倒序展示。当扫到已成功扫描的二维码时应提示并不再添加至列表。</p>
+<h3 id="二、实现"><a href="#二、实现" class="headerlink" title="二、实现"></a>二、实现</h3><h4 id="1、构造二维码序列"><a href="#1、构造二维码序列" class="headerlink" title="1、构造二维码序列"></a>1、构造二维码序列</h4><p>因为扫描二维码后续需要三个动作，一是倒序展示二维码类型（箱/盒）、完整编码以及删除按钮，二是需要构造一个已扫描二维码序列用于后续上传，三是需要统计扫码成功的箱&amp;盒数量。因此构造以下数组结构：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> codeList = [fullCode,...];</div><div class="line"><span class="keyword">let</span> codeItemList = [&#123;</div><div class="line">  typeCode,</div><div class="line">  typeText,</div><div class="line">  fullCode,</div><div class="line">  delType</div><div class="line">&#125;,...];</div></pre></td></tr></table></figure>
+<p>其中 codeList 是已扫描的完整编码序列，codeItemList 用于存储需要展示的二维码序列。</p>
+<p>接下来就是添加二维码逻辑部分,共有两种去重逻辑：</p>
+<p>第一种，使用 filter 方法筛选对象数组中与新增对象的 fullCode 相同的对象，有结果则报错，无结果则添加对象并计数</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">//判断对象数组中与新增对象的fullCode相同的对象数量，为零则表示没有</div><div class="line"><span class="keyword">if</span> (</div><div class="line">  codeItemList.filter(<span class="attr">item</span> =&gt; &#123;</div><div class="line">    return item.<span class="attr">fullCode</span> === codeItem.fullCode;</div><div class="line">  &#125;).<span class="attr">length</span> === <span class="number">0</span></div><div class="line">) &#123;</div><div class="line">  //判断新增判断新增对象的类型，并相应计数</div><div class="line">  <span class="keyword">if</span> (codeItem.<span class="attr">typeCode</span> === <span class="string">"X"</span>) &#123;</div><div class="line">    <span class="attr">caseNum</span> = caseNum + <span class="number">1</span>;</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (</div><div class="line">    codeItem.<span class="attr">typeCode</span> === <span class="string">"H"</span> ||</div><div class="line">    codeItem.<span class="attr">typeCode</span> === <span class="string">"P"</span></div><div class="line">  ) &#123;</div><div class="line">    <span class="attr">boxNum</span> = boxNum + <span class="number">1</span>;</div><div class="line">  &#125;</div><div class="line">  //向字符串数组与对象数组首位添加新对象，以便倒序展示</div><div class="line">  codeItemList.unshift(codeItem);</div><div class="line">  codeList.unshift(fullCode);</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  wx.showToast(&#123;</div><div class="line">    title: <span class="string">"二维码已存在！"</span>,</div><div class="line">    icon: <span class="string">"none"</span>,</div><div class="line">    image: <span class="string">""</span>,</div><div class="line">    duration: <span class="number">1500</span>,</div><div class="line">    mask: <span class="literal">false</span></div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>第二种，直接使用 includes 方法判断字符串数组 codeList 中是否有待添加的 fullCode，有则报错，无则添加并计数：</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">//判断字符串数组中是否包含待增加的fullCode</div><div class="line"><span class="keyword">if</span> (codeList.includes(fullCode)) &#123;</div><div class="line">  wx.showToast(&#123;</div><div class="line">    title: <span class="string">"二维码已存在！"</span>,</div><div class="line">    icon: <span class="string">"none"</span>,</div><div class="line">    image: <span class="string">""</span>,</div><div class="line">    duration: <span class="number">1500</span>,</div><div class="line">    mask: <span class="literal">false</span></div><div class="line">  &#125;);</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  <span class="keyword">if</span> (codeItem.<span class="attr">typeCode</span> === <span class="string">"X"</span>) &#123;</div><div class="line">    <span class="attr">caseNum</span> = caseNum + <span class="number">1</span>;</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (</div><div class="line">    codeItem.<span class="attr">typeCode</span> === <span class="string">"H"</span> ||</div><div class="line">    codeItem.<span class="attr">typeCode</span> === <span class="string">"P"</span></div><div class="line">  ) &#123;</div><div class="line">    <span class="attr">boxNum</span> = boxNum + <span class="number">1</span>;</div><div class="line">  &#125;</div><div class="line">  codeItemList.unshift(codeItem);</div><div class="line">  codeList.unshift(fullCode);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>第一种方法受限于最初的思路，直接筛选整个数组对象，当扫描的二维码非常多时仍然需要遍历整个数组，性能将会受影响（微信小程序的性能……呵呵呵呵）。第二种方法性能更优，但是如果只有对象数组时，需要构造一个新的数组用以存储对象数组中各元素唯一的值。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/JavaScript/">JavaScript</a><a href="/tags/微信小程序/">微信小程序</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+	  	<span></span>
+		<a href="/2019/12/13/业务中遇到的数组去重/#comments" class="ds-thread-count comments-count-link" data-thread-key="2019/12/13/业务中遇到的数组去重/" data-count-type="comments">&nbsp;</a>
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2015/11/19/实战项目总结二：CSS优先级问题以及滚动背景制作/" title="实战项目总结二：CSS优先级问题，滚动背景问题以及背景切换问题" itemprop="url">实战项目总结二：CSS优先级问题，滚动背景问题以及背景切换问题</a>
   </h1>
   <p class="article-author">By
@@ -139,7 +207,7 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/11/17/实战项目总结一：关于人物动画的CSS3实现方法/" title="实战项目总结一：关于人物动画的CSS3实现方法" itemprop="url">实战项目总结一：关于人物动画的CSS3实现方法</a>
+      <a href="/2015/11/17/实战项目总结一：关于人物动画的CSS3实现方法/" title="实战项目总结一：关于人物动画的 CSS3 实现方法" itemprop="url">实战项目总结一：关于人物动画的 CSS3 实现方法</a>
   </h1>
   <p class="article-author">By
        
@@ -152,11 +220,13 @@
 </header>
     <div class="article-content">
         
-        <p>项目正式从技术预研转向实际开发，在实现人物动画的时候遇到了一些麻烦，boss要求人要动起来，而且使移动端所以要适应屏幕分辨率，这不是坑爹嘛<em>(:зゝ∠)</em>好在IT界大神多，在度娘的协助下发现了Aaron大神的一篇博文提到了怎么实现CSS雪碧图的自适应以及如何用自适应的雪碧图实现CSS3动画效果，话不多说上干货~~~原文请戳<a href="http://www.cnblogs.com/aaronjs/p/4744014.html" target="_blank" rel="external">这里</a>，demo地址看<a href="https://github.com/JsAaron/adaptive-sprite" target="_blank" rel="external">这里</a></p>
-<h2 id="首先是自适应部分"><a href="#首先是自适应部分" class="headerlink" title="首先是自适应部分"></a>首先是自适应部分</h2><p>说道自适应首先想到的就是以百分比而不是像素值来确定图像大小和位置了，首先要做的就是使用雪碧图中的单个图像填充整个元素，demo中采用了整张雪碧图按照横纵单个元素数量比进行缩放的办法，代码如下<br><figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">background</span>-<span class="built_in">image</span>: url(sprite.png);</div><div class="line"><span class="built_in">background</span>-<span class="built_in">size</span>: <span class="number">300</span>% <span class="number">300</span>%;</div></pre></td></tr></table></figure></p>
+        <p>项目正式从技术预研转向实际开发，在实现人物动画的时候遇到了一些麻烦，boss 要求人要动起来，而且使移动端所以要适应屏幕分辨率，这不是坑爹嘛<em>(:з ゝ ∠)</em>好在 IT 界大神多，在度娘的协助下发现了 Aaron 大神的一篇博文提到了怎么实现 CSS 雪碧图的自适应以及如何用自适应的雪碧图实现 CSS3 动画效果，话不多说上干货~~~原文请戳<a href="http://www.cnblogs.com/aaronjs/p/4744014.html" target="_blank" rel="external">这里</a>，demo 地址看<a href="https://github.com/JsAaron/adaptive-sprite" target="_blank" rel="external">这里</a></p>
+<h2 id="首先是自适应部分"><a href="#首先是自适应部分" class="headerlink" title="首先是自适应部分"></a>首先是自适应部分</h2><p>说道自适应首先想到的就是以百分比而不是像素值来确定图像大小和位置了，首先要做的就是使用雪碧图中的单个图像填充整个元素，demo 中采用了整张雪碧图按照横纵单个元素数量比进行缩放的办法，代码如下</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">background</span>-<span class="built_in">image</span>: url(sprite.png);</div><div class="line"><span class="built_in">background</span>-<span class="built_in">size</span>: <span class="number">300</span>% <span class="number">300</span>%;</div></pre></td></tr></table></figure>
 <p>这样将整张图整体放大了三倍，单个图像就可以充满整个元素了~\(≧▽≦)/~</p>
-<h2 id="其次是动画部分"><a href="#其次是动画部分" class="headerlink" title="其次是动画部分"></a>其次是动画部分</h2><p>因为背景图已经是自适应的了所以不能使用固定的像素值来确定关键帧中图像的位置，那如何确定怎么取值呢，Aaron大大给出了一个流弊的函数，使用JavaScript根据雪碧图中单个图像的行列数以及总个数来计算关键帧取值的百分比，对于js不好的鄙人来说简直是福音啊啊啊啊啊~~~~代码参上<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">calculationKeyframes</span>(<span class="params">col, row, count</span>) </span>&#123;</div><div class="line">        <span class="comment">//矩阵生成step的处理</span></div><div class="line">        <span class="comment">//  0 1 2</span></div><div class="line">        <span class="comment">//  3 4 5</span></div><div class="line">        <span class="comment">//  6 7 8</span></div><div class="line">        <span class="keyword">var</span> keyframes = [];</div><div class="line">        <span class="keyword">var</span> base = <span class="number">100</span> / count;</div><div class="line">        <span class="comment">//首次</span></div><div class="line">        keyframes.push(<span class="number">0</span> + <span class="string">'% &#123; background-position:0% 0%&#125;'</span>)</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</div><div class="line">            <span class="comment">//当前行数</span></div><div class="line">            <span class="keyword">var</span> currRow = <span class="built_in">Math</span>.ceil((i + <span class="number">1</span>) / col); <span class="comment">//当前行数</span></div><div class="line">            <span class="keyword">var</span> currCol = <span class="built_in">Math</span>.floor(i / col); <span class="comment">//当前列数</span></div><div class="line">            <span class="keyword">var</span> period = currCol * col; <span class="comment">//每段数量</span></div><div class="line">            <span class="keyword">var</span> x = <span class="number">100</span> * (i - period)</div><div class="line">            <span class="keyword">var</span> y = <span class="number">100</span> * currCol;</div><div class="line">            x = x == <span class="number">0</span> ? x : <span class="string">"-"</span> + x;</div><div class="line">            y = y == <span class="number">0</span> ? y : <span class="string">"-"</span> + y;</div><div class="line">            keyframes.push(((i + <span class="number">1</span>) * base) + <span class="string">'% &#123; background-position: '</span> + x + <span class="string">'% '</span> + y + <span class="string">'%&#125;'</span>)</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> keyframes.join(<span class="string">""</span>)</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>总共传入行数，列数以及小图像的总个数三个参数，经过计算后直接输出关键帧代码，在此表示对Aaron大大的深深佩服之情</p>
+<h2 id="其次是动画部分"><a href="#其次是动画部分" class="headerlink" title="其次是动画部分"></a>其次是动画部分</h2><p>因为背景图已经是自适应的了所以不能使用固定的像素值来确定关键帧中图像的位置，那如何确定怎么取值呢，Aaron 大大给出了一个流弊的函数，使用 JavaScript 根据雪碧图中单个图像的行列数以及总个数来计算关键帧取值的百分比，对于 js 不好的鄙人来说简直是福音啊啊啊啊啊~~~~代码参上</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">calculationKeyframes</span>(<span class="params">col, row, count</span>) </span>&#123;</div><div class="line">        <span class="comment">//矩阵生成step的处理</span></div><div class="line">        <span class="comment">//  0 1 2</span></div><div class="line">        <span class="comment">//  3 4 5</span></div><div class="line">        <span class="comment">//  6 7 8</span></div><div class="line">        <span class="keyword">var</span> keyframes = [];</div><div class="line">        <span class="keyword">var</span> base = <span class="number">100</span> / count;</div><div class="line">        <span class="comment">//首次</span></div><div class="line">        keyframes.push(<span class="number">0</span> + <span class="string">'% &#123; background-position:0% 0%&#125;'</span>)</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</div><div class="line">            <span class="comment">//当前行数</span></div><div class="line">            <span class="keyword">var</span> currRow = <span class="built_in">Math</span>.ceil((i + <span class="number">1</span>) / col); <span class="comment">//当前行数</span></div><div class="line">            <span class="keyword">var</span> currCol = <span class="built_in">Math</span>.floor(i / col); <span class="comment">//当前列数</span></div><div class="line">            <span class="keyword">var</span> period = currCol * col; <span class="comment">//每段数量</span></div><div class="line">            <span class="keyword">var</span> x = <span class="number">100</span> * (i - period)</div><div class="line">            <span class="keyword">var</span> y = <span class="number">100</span> * currCol;</div><div class="line">            x = x == <span class="number">0</span> ? x : <span class="string">"-"</span> + x;</div><div class="line">            y = y == <span class="number">0</span> ? y : <span class="string">"-"</span> + y;</div><div class="line">            keyframes.push(((i + <span class="number">1</span>) * base) + <span class="string">'% &#123; background-position: '</span> + x + <span class="string">'% '</span> + y + <span class="string">'%&#125;'</span>)</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> keyframes.join(<span class="string">""</span>)</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>总共传入行数，列数以及小图像的总个数三个参数，经过计算后直接输出关键帧代码，在此表示对 Aaron 大大的深深佩服之情</p>
 
         
         
@@ -395,11 +465,7 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/CSS3/" title="CSS3">CSS3<sup>1</sup></a></li>
+				<li><a href="/tags/JavaScript/" title="JavaScript">JavaScript<sup>2</sup></a></li>
 			
 		
 			
@@ -407,7 +473,15 @@
 			
 		
 			
+				<li><a href="/tags/CSS3/" title="CSS3">CSS3<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/hexo/" title="hexo">hexo<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/微信小程序/" title="微信小程序">微信小程序<sup>1</sup></a></li>
 			
 		
 			
@@ -475,7 +549,7 @@
 	
 	
 	<section class="info">
-		<p> 努力学习前端开发的程序猿一只 <br/>
+		<p> 努力搬砖的前端🐶 <br/>
 			爱生活，爱代码，爱游戏，爱妹子~</p>
 	</section>
 	 
